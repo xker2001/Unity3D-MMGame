@@ -63,7 +63,7 @@ namespace MMGame.UI
 
         public override void Layout()
         {
-            UIHelper.FixedlyChangeAnchors(rectTransform, new Vector2(0, 1), new Vector2(0, 1));
+            UIUtility.FixedlyChangeAnchors(rectTransform, new Vector2(0, 1), new Vector2(0, 1));
             items.Clear();
             float startPos = -topPadding;
 
@@ -75,7 +75,7 @@ namespace MMGame.UI
                 item.localScale = itemScale;
 
                 // 设置锚定方式
-                UIHelper.FixedlyChangeAnchors(item, new Vector2(0, 1), new Vector2(0, 1));
+                UIUtility.FixedlyChangeAnchors(item, new Vector2(0, 1), new Vector2(0, 1));
 
                 // 设置大小
                 if (expandWidth)
@@ -132,8 +132,8 @@ namespace MMGame.UI
         // IUISizeFitableLayout
         //--------------------------------------------------
 
-        public event Action<Vector2> SizeChanged;
-        public Vector2 SizeDelta { get; private set; }
+        public event Action<float, float> SizeChanged;
+        public Vector2 Size { get; private set; }
 
         /// <summary>
         /// 计算适合内容的大小。
@@ -147,13 +147,13 @@ namespace MMGame.UI
                 sumItemHeight += item.rect.size.y;
             }
 
-            SizeDelta = new Vector2(
+            Size = new Vector2(
                 rectTransform.sizeDelta.x,
                 topPadding + bottomPadding + sumItemHeight + Mathf.Max(0, (items.Count - 1)) * rowSpace);
 
             if (SizeChanged != null)
             {
-                SizeChanged(SizeDelta);
+                SizeChanged(Size.x, Size.y);
             }
         }
     }

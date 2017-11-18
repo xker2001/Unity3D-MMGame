@@ -21,7 +21,6 @@ namespace MMGame.UI
         [SerializeField]
         private float hideDuration = 0.5f;
 
-
         [Range(0, 1)]
         [SerializeField]
         private float fadeInDurationPercent = 0.5f;
@@ -36,7 +35,6 @@ namespace MMGame.UI
         [SerializeField]
         private Ease fadeOutEaseType = Ease.Linear;
 
-
         [SerializeField]
         private bool loop;
 
@@ -48,7 +46,7 @@ namespace MMGame.UI
         [SerializeField]
         private int loopTimes = -1;
 
-        protected override void InitPlaying()
+        protected override void PreparePlaying()
         {
             canvasGroup.alpha = endAlpha;
         }
@@ -82,7 +80,7 @@ namespace MMGame.UI
                     seq.SetLoops(loopTimes, loopType);
                 }
 
-                seq.OnComplete(OnComplete)
+                seq.OnComplete(SetSelfComplete)
                    .SetAutoKill(false)
                    .SetUpdate(UpdateType.Normal, true);
             }

@@ -1,0 +1,51 @@
+@startuml
+skinparam backgroundcolor #FBFBFB
+ 
+skinparam state {
+    BackgroundColor #F3F3F3
+    BorderColor #333333
+    ArrowColor #333333
+    FontColor #333333
+    AttributeFontColor #333333
+    FontSize 14
+    FontName Consolas
+    FontStyle bold
+    AttributeFontSize 14
+    AttributeFontName Consolas
+}
+ 
+skinparam stereotype {
+    CBackgroundColor #D4EDD7
+    ABackgroundColor #C7EEF0
+    IBackgroundColor #D9D1F9
+    EBackgroundColor #F4C9C0
+}
+ 
+skinparam note {
+    BackgroundColor #FDFDFD
+    BorderColor #333333
+    FontColor #333333
+    FontSize 14
+    FontName Consolas
+}
+ 
+skinparam shadowing false
+scale 1
+ 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+[*] --> ActionSelfComplete.Play : Delay 1s
+ActionSelfComplete.Play -r-> ActionFlag.Play : SelfComplete 1s
+ActionFlag.Play -r-> ActionElapse.Play : Flag 2s
+ActionElapse.Play -r-> ActionLast.Play1 : Elapse 1.5s
+ActionLast.Play1 --> ActionLast.Stop1 : Elapse 2s
+ActionLast.Stop1 -l-> ActionLast.Play2 : Elapse 4.5s + delay 1s
+ActionLast.Play2 -l-> ActionLast.Stop2 : Elapse 7.5s
+ActionLast.Stop2 -l-> ActionLast.Play3未执行 : Elapse 8.0s + delay 1s
+ActionLast.Play3未执行 --> Graph.Stop : 同时停止 Play Coroutine
+Graph.Stop -r-> [*]
+
+[*] -u-> ActionSelfComplete3Times : 触发三次
+[*] -r-> ActionSelfCompleteLoop : 触发无限次
+
+@enduml

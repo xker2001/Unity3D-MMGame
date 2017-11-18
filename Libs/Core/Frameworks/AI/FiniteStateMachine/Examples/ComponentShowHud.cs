@@ -63,11 +63,11 @@
             // do something
         }
 
-        public override void ResetForSpawn()
+        public override void OnSpawn()
         {
         }
 
-        public override void ReleaseForDespawn()
+        public override void OnDespawn()
         {
         }
     }

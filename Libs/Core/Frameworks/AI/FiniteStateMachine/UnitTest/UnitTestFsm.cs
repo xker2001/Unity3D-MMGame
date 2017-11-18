@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using MMGame.Event;
 
 namespace MMGame.AI.FiniteStateMachine.UnitTest
 {
-    public class TestEvent : Event
-    {
-    }
+    public class TestEventData : EventData {}
 
     public class UnitTestFsm : MMGame.UnitTest
     {
@@ -491,7 +490,7 @@ namespace MMGame.AI.FiniteStateMachine.UnitTest
         public void State1003To1004()
         {
             AreSame(fsm.CurrentState, fsm.State1003);
-            this.SendEvent(fsm.Evt1001.EventName, EventPool.New<TestEvent>());
+            this.SendEvent(fsm.Evt1001.EventType, EventPool.New<TestEventData>());
         }
 
         [TestMethod(16)]
@@ -540,7 +539,7 @@ namespace MMGame.AI.FiniteStateMachine.UnitTest
             IsTrue(fsm.Evt1001.IsEnabled);
             IsTrue(fsm.Evt1002.IsEnabled);
 
-            this.SendEvent(fsm.Evt1002.EventName, EventPool.New<TestEvent>());
+            this.SendEvent(fsm.Evt1002.EventType, EventPool.New<TestEventData>());
         }
 
         [TestMethod(18)]
@@ -606,7 +605,7 @@ namespace MMGame.AI.FiniteStateMachine.UnitTest
         public void TestState1011To1010()
         {
             AreSame(fsm.CurrentState, fsm.State1010);
-            this.SendEvent(fsm.Evt1001.EventName, EventPool.New<TestEvent>()); // 测试 Evt1001 在第二个连线上重复使用
+            this.SendEvent(fsm.Evt1001.EventType, EventPool.New<TestEventData>()); // 测试 Evt1001 在第二个连线上重复使用
         }
 
         // 测试事件复用

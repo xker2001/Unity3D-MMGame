@@ -37,7 +37,7 @@ namespace MMGame.UI
         [SerializeField]
         private UnityEvent onFadeInComplete;
 
-        protected override void InitPlaying()
+        protected override void PreparePlaying()
         {
             canvasGroup.alpha = startAlpha;
         }
@@ -51,7 +51,7 @@ namespace MMGame.UI
                              .AppendCallback(OnFadeInComplete)
                              .AppendInterval(showDuration)
                              .Append(canvasGroup.DOFade(startAlpha, fadeOutDuration).SetEase(fadeOutEaseType))
-                             .OnComplete(OnComplete)
+                             .OnComplete(SetSelfComplete)
                              .SetAutoKill(false)
                              .SetUpdate(UpdateType.Normal, true);
             }

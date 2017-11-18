@@ -12,6 +12,7 @@ namespace MMGame.EffectFactory
         [SerializeField] private AudioClip sound;
         [SerializeField] [Range(0, 1)] private float volume = 0.6f;
         [SerializeField] [Range(0, 10)] private float pitch = 1;
+        [Tooltip("0: 2D, 1 3D")]
         [SerializeField] [Range(0, 1)] private float spatialBlend = 1; // 3D on default
 
         /// <summary>

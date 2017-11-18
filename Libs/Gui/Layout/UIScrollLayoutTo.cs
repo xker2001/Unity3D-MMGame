@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace MMGame.UI
 {
     /// <summary>
-    /// 设置指定索引的 IUIScrolltoableLayout 子控件到视口。如果有可能，设置到中央。
+    /// 设置指定索引的 IUIScrolltoableLayout 子控件到视口。可以选择设置到中央或最近的边缘。
     ///
     /// 组件结构范例：
     /// - panel: UIScrollLayoutTo

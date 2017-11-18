@@ -70,6 +70,18 @@ namespace MMGame.VideoPlayer
         protected UITimelineLocator timelineLocator;
 
         /// <summary>
+        /// 音乐静音淡出时间。
+        /// </summary>
+        [SerializeField]
+        protected float musicTurnOffDuration = 1;
+
+        /// <summary>
+        /// 音乐恢复淡入时间。
+        /// </summary>
+        [SerializeField]
+        protected float musicTurnOnDuration = 1;
+
+        /// <summary>
         /// 加载完成后是否自动播放。
         /// </summary>
         private bool playOnLoaded;

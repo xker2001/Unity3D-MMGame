@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using MMGame.Event;
 
 namespace MMGame.AI.BehaviourTree
 {
@@ -13,8 +14,8 @@ namespace MMGame.AI.BehaviourTree
     /// </summary>
     public class EventCache : MonoBehaviour
     {
-        private Dictionary<string, List<Event>> coldCache = new Dictionary<string, List<Event>>();
-        private Dictionary<string, List<Event>> hotCache = new Dictionary<string, List<Event>>();
+        private Dictionary<string, List<EventData>> coldCache = new Dictionary<string, List<EventData>>();
+        private Dictionary<string, List<EventData>> hotCache = new Dictionary<string, List<EventData>>();
 
         /// <summary>
         /// 将冷备用缓存推出为热备用缓存，在行为树准备执行前调用。
@@ -33,13 +34,13 @@ namespace MMGame.AI.BehaviourTree
         /// </summary>
         /// <param name="eventName">事件名称。</param>
         /// <param name="e">事件数据。</param>
-        public void AddEvent(string eventName, Event e)
+        public void AddEvent(string eventName, EventData e)
         {
-            List<Event> events;
+            List<EventData> events;
 
             if (!coldCache.TryGetValue(eventName, out events))
             {
-                events = new List<Event>();
+                events = new List<EventData>();
                 coldCache.Add(eventName, events);
             }
 
@@ -61,13 +62,13 @@ namespace MMGame.AI.BehaviourTree
         /// </summary>
         /// <param name="eventName">事件名称。</param>
         /// <returns>事件数据列表。</returns>
-        public List<Event> GetEvents(string eventName)
+        public List<EventData> GetEvents(string eventName)
         {
-            List<Event> events;
+            List<EventData> events;
 
             if (!hotCache.TryGetValue(eventName, out events))
             {
-                events = new List<Event>();
+                events = new List<EventData>();
                 hotCache.Add(eventName, events);
             }
 
@@ -87,11 +88,11 @@ namespace MMGame.AI.BehaviourTree
         /// 释放事件缓存中的事件数据包并清空事件缓存。
         /// </summary>
         /// <param name="eventDic">事件缓存。</param>
-        private void ClearCache(Dictionary<string, List<Event>> eventDic)
+        private void ClearCache(Dictionary<string, List<EventData>> eventDic)
         {
-            foreach (List<Event> events in eventDic.Values)
+            foreach (List<EventData> events in eventDic.Values)
             {
-                foreach (Event e in events)
+                foreach (EventData e in events)
                 {
                     EventPool.Delete(e);
                 }

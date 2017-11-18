@@ -10,10 +10,10 @@ namespace MMGame.UI
         [SerializeField]
         private OutScreenAnchor anchor;
 
-        protected override void InitPlaying()
+        protected override void PreparePlaying()
         {
             toPosition = GetOriginalPosition();
-            transform.position = GetOutScreenPosition(anchor);
+            rectTransform.position = GetOutScreenPosition(anchor, rectTransform.position);
         }
     }
 }

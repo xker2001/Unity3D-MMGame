@@ -63,8 +63,6 @@ namespace MMGame
 
         public void Init()
         {
-            Type type = typeof(IInitializable);
-
             for (int i = 0; i < components.Count; i++)
             {
                 MonoBehaviour component = components[i];

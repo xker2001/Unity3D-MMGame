@@ -13,7 +13,7 @@ namespace MMGame.UI
         protected override void Awake()
         {
             base.Awake();
-            canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            canvasGroup = Target.GetComponent<CanvasGroup>();
             Assert.IsNotNull(canvasGroup);
         }
 

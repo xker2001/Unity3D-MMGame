@@ -24,7 +24,7 @@ namespace MMGame.UI
         [SerializeField]
         private Ease easeType = Ease.Linear;
 
-        protected override void InitPlaying()
+        protected override void PreparePlaying()
         {
             canvasGroup.alpha = startAlpha;
         }
@@ -36,7 +36,7 @@ namespace MMGame.UI
                 seq = DOTween.Sequence()
                              .Append(canvasGroup.DOFade(endAlpha, fadeInDuration).SetEase(easeType))
                              .AppendInterval(showDuration)
-                             .OnComplete(OnComplete)
+                             .OnComplete(SetSelfComplete)
                              .SetAutoKill(false)
                              .SetUpdate(UpdateType.Normal, true);
             }

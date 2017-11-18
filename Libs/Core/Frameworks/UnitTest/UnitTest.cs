@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
+using Debug = UnityEngine.Debug;
 
 namespace MMGame
 {
@@ -21,6 +22,8 @@ namespace MMGame
 
     /// <summary>
     /// 按时间（秒）调用的基本 Attribute。
+    /// 注意无法按准确时间调用，只能在大于指定时间的第一帧的时间调用。
+    /// 真实的调用时间 = 设定时间 + Time.deltaTime
     /// </summary>
     abstract public class TestBaseTimeAttribute : Attribute
     {
@@ -119,7 +122,6 @@ namespace MMGame
         }
     }
 
-
     /// <summary>
     /// 所有单元测试的基类。提供断言方法，并负责分批次调用测试方法。
     /// </summary>
@@ -130,25 +132,28 @@ namespace MMGame
         private float time;
 
         /// 所有需要执行的帧批次列表
-        private List<int> frameIndexes = new List<int>();
+        private readonly List<int> frameIndexes = new List<int>();
 
         /// 所有的测试方法
         private MethodInfo[] methods;
-        private List<MethodInfo> frameMethods = new List<MethodInfo>();
-        private List<MethodInfo> timeMethods = new List<MethodInfo>();
+        private readonly List<MethodInfo> frameMethods = new List<MethodInfo>();
+        private readonly List<MethodInfo> timeMethods = new List<MethodInfo>();
+
+        private const string timeTitleFormat = "--------------- {0} Time: {1} / {2} ----------------";
+        private const string frameTitleFormat = "--------------- {0} Frame: {1}----------------";
 
         public int LineNumber
         {
-            get { return (new StackFrame(1, true)).GetFileLineNumber(); }
+            get { return new StackFrame(1, true).GetFileLineNumber(); }
         }
 
-        void Start()
+        private void Start()
         {
             FilterTestMethods(); // 获取所有方法并分类到 frame 和 time 两种列表中
             CreateBatchIndexes(); // 获取所有有效帧批次列表
         }
 
-        void Update()
+        private void Update()
         {
             InvokeFrameMethods();
             InvokeTimeMethods();
@@ -156,7 +161,7 @@ namespace MMGame
 
         private void InvokeTimeMethods()
         {
-            string testFileName = this.GetType().Name;
+            string testFileName = GetType().Name;
 
             float newTime = time + Time.deltaTime;
 
@@ -164,48 +169,33 @@ namespace MMGame
             {
                 MethodInfo method = timeMethods[i];
 
-                TimeTestDebug timeDebugAttr =
-                    Attribute.GetCustomAttribute(method, typeof(TimeTestDebug)) as TimeTestDebug;
-
-                TimeTestMethod timeMethodAttr =
-                    Attribute.GetCustomAttribute(method, typeof(TimeTestMethod)) as TimeTestMethod;
-
-                TimeTestError timeErrorAttr =
-                    Attribute.GetCustomAttribute(method, typeof(TimeTestError)) as TimeTestError;
-
-                TimeTestRun timeRunAttr =
-                    Attribute.GetCustomAttribute(method, typeof(TimeTestRun)) as TimeTestRun;
+                var timeDebugAttr = Attribute.GetCustomAttribute(method, typeof(TimeTestDebug)) as TimeTestDebug;
+                var timeMethodAttr = Attribute.GetCustomAttribute(method, typeof(TimeTestMethod)) as TimeTestMethod;
+                var timeErrorAttr = Attribute.GetCustomAttribute(method, typeof(TimeTestError)) as TimeTestError;
+                var timeRunAttr = Attribute.GetCustomAttribute(method, typeof(TimeTestRun)) as TimeTestRun;
 
                 if (timeDebugAttr != null && timeDebugAttr.Time >= time && timeDebugAttr.Time <= newTime)
                 {
                     // ReSharper disable once HeapView.BoxingAllocation
-                    UnityEngine.Debug.LogWarning(
-                                                 string.Format("--------------- {0} Time: {1} / {2} ----------------",
-                                                               testFileName, timeDebugAttr.Time, newTime));
+                    Debug.LogWarning(string.Format(timeTitleFormat, testFileName, timeDebugAttr.Time, newTime));
                     method.Invoke(this, null);
                 }
 
                 if (timeRunAttr != null && timeRunAttr.Time >= time && timeRunAttr.Time <= newTime)
                 {
-                    UnityEngine.Debug.LogWarning(
-                                                 string.Format("--------------- {0} Time: {1} / {2} ----------------",
-                                                               testFileName, timeRunAttr.Time, newTime));
+                    Debug.LogWarning(string.Format(timeTitleFormat, testFileName, timeRunAttr.Time, newTime));
                     method.Invoke(this, null);
                 }
 
                 if (timeMethodAttr != null && timeMethodAttr.Time >= time && timeMethodAttr.Time <= newTime)
                 {
-                    UnityEngine.Debug.LogWarning(
-                                                 string.Format("--------------- {0} Time: {1} / {2} ----------------",
-                                                               testFileName, timeMethodAttr.Time, newTime));
+                    Debug.LogWarning(string.Format(timeTitleFormat, testFileName, timeMethodAttr.Time, newTime));
                     InvokeTestMethod(method, testFileName);
                 }
 
                 if (timeErrorAttr != null && timeErrorAttr.Time >= time && timeErrorAttr.Time <= newTime)
                 {
-                    UnityEngine.Debug.LogWarning(
-                                                 string.Format("--------------- {0} Time: {1} / {2} ----------------",
-                                                               testFileName, timeErrorAttr.Time, newTime));
+                    Debug.LogWarning(string.Format(timeTitleFormat, testFileName, timeErrorAttr.Time, newTime));
                     InvokeTestError(method);
                 }
             }
@@ -217,28 +207,19 @@ namespace MMGame
         {
             if (frameIndexes.Count > 0 && frame <= frameIndexes[frameIndexes.Count - 1] && frameIndexes.Contains(frame))
             {
-                string testFileName = this.GetType().Name;
+                string testFileName = GetType().Name;
 
                 // ReSharper disable once HeapView.BoxingAllocation
-                UnityEngine.Debug.LogWarning(
-                                             string.Format("--------------- {0} Frame: {1}----------------",
-                                                           testFileName, frame));
+                Debug.LogWarning(string.Format(frameTitleFormat, testFileName, frame));
 
                 for (int i = 0; i < frameMethods.Count; i++)
                 {
                     MethodInfo method = frameMethods[i];
 
-                    TestDebug debugAttr =
-                        Attribute.GetCustomAttribute(method, typeof(TestDebug)) as TestDebug;
-
-                    TestMethod methodAtt =
-                        Attribute.GetCustomAttribute(method, typeof(TestMethod)) as TestMethod;
-
-                    TestError errorAttr =
-                        Attribute.GetCustomAttribute(method, typeof(TestError)) as TestError;
-
-                    TestRun runAttr =
-                        Attribute.GetCustomAttribute(method, typeof(TestRun)) as TestRun;
+                    var debugAttr = Attribute.GetCustomAttribute(method, typeof(TestDebug)) as TestDebug;
+                    var methodAtt = Attribute.GetCustomAttribute(method, typeof(TestMethod)) as TestMethod;
+                    var errorAttr = Attribute.GetCustomAttribute(method, typeof(TestError)) as TestError;
+                    var runAttr = Attribute.GetCustomAttribute(method, typeof(TestRun)) as TestRun;
 
                     // 直接调用当前批次的 TestDebug 和 TestRun，不捕捉异常
                     if ((debugAttr != null && debugAttr.Frame == frame) ||
@@ -266,19 +247,18 @@ namespace MMGame
 
         private void FilterTestMethods()
         {
-            methods = this.GetType().GetMethods();
+            methods = GetType().GetMethods();
 
             foreach (MethodInfo minfo in methods)
             {
-                TestBaseAttribute attr =
-                    Attribute.GetCustomAttribute(minfo, typeof(TestBaseAttribute), true) as TestBaseAttribute;
+                var attr = Attribute.GetCustomAttribute(minfo, typeof(TestBaseAttribute), true) as TestBaseAttribute;
 
                 if (attr != null)
                 {
                     frameMethods.Add(minfo);
                 }
 
-                TestBaseTimeAttribute timeAttr =
+                var timeAttr =
                     Attribute.GetCustomAttribute(minfo, typeof(TestBaseTimeAttribute), true) as TestBaseTimeAttribute;
 
                 if (timeAttr != null)
@@ -292,8 +272,7 @@ namespace MMGame
         {
             foreach (MethodInfo minfo in frameMethods)
             {
-                TestBaseAttribute attr =
-                    Attribute.GetCustomAttribute(minfo, typeof(TestBaseAttribute), true) as TestBaseAttribute;
+                var attr = Attribute.GetCustomAttribute(minfo, typeof(TestBaseAttribute), true) as TestBaseAttribute;
 
                 if (attr != null && !frameIndexes.Contains(attr.Frame))
                 {
@@ -336,15 +315,15 @@ namespace MMGame
             catch (Exception e)
             {
                 Exception ie = e.InnerException;
-                StreamingContext ctx = new StreamingContext(StreamingContextStates.CrossAppDomain);
-                ObjectManager mgr = new ObjectManager(null, ctx);
-                SerializationInfo si = new SerializationInfo(ie.GetType(), new FormatterConverter());
+                var ctx = new StreamingContext(StreamingContextStates.CrossAppDomain);
+                var mgr = new ObjectManager(null, ctx);
+                var si = new SerializationInfo(ie.GetType(), new FormatterConverter());
 
                 ie.GetObjectData(si, ctx);
                 mgr.RegisterObject(ie, 1, si);
                 mgr.DoFixups();
 
-                StackTrace trace = new StackTrace(ie, true);
+                var trace = new StackTrace(ie, true);
                 StackFrame frame = null;
 
                 for (int j = 0; j < trace.FrameCount; j++)
@@ -372,9 +351,7 @@ namespace MMGame
         private void LogFailed(string fileName, string methodName, int lineNumber)
         {
             UnityEngine.Debug.LogWarningFormat(
-                                               string.Format(
-                                                             "<b><color=red>Failed: {0}.{1}(): {2}</color></b>",
-                                                             fileName, methodName, lineNumber));
+                "<b><color=red>Failed: {0}.{1}(): {2}</color></b>", fileName, methodName, lineNumber);
         }
 
         //--------------------------------------------------
@@ -486,7 +463,7 @@ namespace MMGame
         // object
         public void AreSame(object v1, object v2)
         {
-            if (!System.Object.ReferenceEquals(v1, v2))
+            if (!ReferenceEquals(v1, v2))
             {
                 Fail();
             }
@@ -494,7 +471,7 @@ namespace MMGame
 
         public void AreNotSame(object v1, object v2)
         {
-            if (System.Object.ReferenceEquals(v1, v2))
+            if (ReferenceEquals(v1, v2))
             {
                 Fail();
             }

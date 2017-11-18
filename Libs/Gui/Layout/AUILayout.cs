@@ -26,6 +26,11 @@ namespace MMGame.UI
 
         /// <summary>
         /// 执行一次自动布局。
+        /// 自动布局在派生类的相应方法中调用，如： 
+        /// - Start()
+        /// - OnTransformChildrenChanged()
+        /// - Update() 
+        /// - etc.
         /// </summary>
         protected void AutoLayout()
         {

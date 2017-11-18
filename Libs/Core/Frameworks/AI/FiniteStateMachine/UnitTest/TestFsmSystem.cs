@@ -151,7 +151,6 @@ namespace MMGame.AI.FiniteStateMachine.UnitTest
         [NonSerialized]
         public TestEventListener EventListener5;
 
-
         void Awake()
         {
             State11 = gameObject.AddComponent<TestState>().SetInfo("State11");
@@ -209,14 +208,14 @@ namespace MMGame.AI.FiniteStateMachine.UnitTest
             Con1014 = gameObject.AddComponent<TestCondition>().SetInfo("Con1014");
             Con1015 = gameObject.AddComponent<TestCondition>().SetInfo("Con1015");
             Con1016 = gameObject.AddComponent<TestCondition>().SetInfo("Con1016");
-            Evt1 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt1").SetEventName("Evt1");
-            Evt2 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt2").SetEventName("Evt2");
-            Evt3 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt3").SetEventName("Evt3");
-            Evt4 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt4").SetEventName("Evt4");
-            Evt5 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt5").SetEventName("Evt5");
-            Evt6 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt6").SetEventName("Evt6");
-            Evt1001 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt1001").SetEventName("Evt1001");
-            Evt1002 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt1002").SetEventName("Evt1002");
+            Evt1 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt1").SetEventType(EventType.Type1);
+            Evt2 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt2").SetEventType(EventType.Type2);
+            Evt3 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt3").SetEventType(EventType.Type3);
+            Evt4 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt4").SetEventType(EventType.Type4);
+            Evt5 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt5").SetEventType(EventType.Type5);
+            Evt6 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt6").SetEventType(EventType.Type6);
+            Evt1001 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt1001").SetEventType(EventType.Type1001);
+            Evt1002 = gameObject.AddComponent<TestEventListener>().SetInfo("Evt1002").SetEventType(EventType.Type1002);
             ServiceProvider1 = gameObject.AddComponent<TestServiceProvider>().SetInfo("ServiceProvider1");
             ServiceProvider2 = gameObject.AddComponent<TestServiceProvider>().SetInfo("ServiceProvider2");
             ServiceProvider3 = gameObject.AddComponent<TestServiceProvider>().SetInfo("ServiceProvider3");

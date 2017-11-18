@@ -1,5 +1,4 @@
-﻿using EasyEditor;
-using UnityEngine;
+﻿using Sirenix.OdinInspector;
 
 namespace MMGame.VideoPlayer
 {
@@ -13,12 +12,14 @@ namespace MMGame.VideoPlayer
             SetActive(controls, true);
             SetActive(controlsMask, true);
             SetTimelineSliderValue(0);
+            External.Action.TurnOffMusic();
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
             OnUnload();
+            External.Action.TurnOnMusic();
         }
 
         //--------------------------------------------------
@@ -112,9 +113,11 @@ namespace MMGame.VideoPlayer
         // 测试方法 
         //--------------------------------------------------
 
+        // http://clips.vorwaerts-gmbh.de/VfE_html5.mp4
         public string testVideo;
 
-        [Inspector]
+        [Button(ButtonSizes.Medium)]
+        [GUIColor(0.8f, 0.9f, 1, 1)]
         private void TestLoadAndPlay()
         {
             LoadAndPlay(testVideo);

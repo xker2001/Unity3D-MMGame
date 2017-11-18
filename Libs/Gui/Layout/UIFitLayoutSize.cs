@@ -5,8 +5,8 @@ using UnityEngine.Assertions;
 namespace MMGame.UI
 {
     /// <summary>
-    /// 根据子控件调整控件大小，必须与 AUILayout 组件同时使用。
-    /// 注意，在需要调整的方向上，AUILayout 的锚定方式不得为拉伸。
+    /// 根据子控件调整控件大小，必须与 IUISizeFitableLayout 组件同时使用。
+    /// 注意，在需要调整的方向上，IUISizeFitableLayout 的锚定方式不得为拉伸。
     /// </summary>
     public class UIFitLayoutSize : EasyUIBehaviour
     {
@@ -38,21 +38,31 @@ namespace MMGame.UI
 
             fitableLayout = layout as IUISizeFitableLayout;
             Assert.IsNotNull(fitableLayout);
+        }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
             fitableLayout.SizeChanged += OnFitableSizeChanged;
         }
 
-        protected override void OnDestroy()
+        protected override void OnDisable()
         {
-            base.OnDestroy();
+            base.OnDisable();
             fitableLayout.SizeChanged -= OnFitableSizeChanged;
         }
 
-        private void OnFitableSizeChanged(Vector2 sizeDelta)
+        private void OnFitableSizeChanged(float sizeX, float sizeY)
         {
-            float sizeX = ignoreWidth ? rectTransform.sizeDelta.x : sizeDelta.x;
-            float sizeY = ignoreHeight ? rectTransform.sizeDelta.y : sizeDelta.y;
-            rectTransform.sizeDelta = new Vector2(sizeX, sizeY);
+            if (!ignoreWidth)
+            {
+                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, sizeX);
+            }
+
+            if (!ignoreHeight)
+            {
+                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, sizeY);
+            }
         }
     }
 }

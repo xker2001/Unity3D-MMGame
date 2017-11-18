@@ -2,11 +2,11 @@
 {
     public class ExampleEventListener : EventListener
     {
-        public override void ResetForSpawn()
+        public override void OnSpawn()
         {
         }
 
-        public override void ReleaseForDespawn()
+        public override void OnDespawn()
         {
         }
     }

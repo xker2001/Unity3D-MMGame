@@ -99,7 +99,7 @@ namespace MMGame
             // 新实例的 OnSpawn 应该由该创建的 DoSpawn 调用执行。
             for (int i = 0; i < ownComps.Length; i++)
             {
-                ownComps[i].ResetForSpawn();
+                ownComps[i].OnSpawn();
             }
 
             // Prefab 状态下的子级（多层）的组件
@@ -107,7 +107,7 @@ namespace MMGame
             {
                 for (int j = 0; j < childrenComps[i].Length; j++)
                 {
-                    childrenComps[i][j].ResetForSpawn();
+                    childrenComps[i][j].OnSpawn();
                 }
             }
         }
@@ -120,7 +120,7 @@ namespace MMGame
             // 执行自己各组件的 OnDespawn。如果持有子级对象池实例，应该在这里全部释放完毕。
             for (int i = 0; i < ownComps.Length; i++)
             {
-                ownComps[i].ReleaseForDespawn();
+                ownComps[i].OnDespawn();
             }
 
             // Prefab 状态下的子级（多层）的组件
@@ -128,7 +128,7 @@ namespace MMGame
             {
                 for (int j = 0; j < childrenComps[i].Length; j++)
                 {
-                    childrenComps[i][j].ReleaseForDespawn();
+                    childrenComps[i][j].OnDespawn();
                 }
             }
         }

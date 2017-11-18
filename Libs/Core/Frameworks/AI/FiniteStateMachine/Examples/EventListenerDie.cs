@@ -1,4 +1,6 @@
-﻿namespace MMGame.AI.FiniteStateMachine.Example
+﻿using MMGame.Event;
+
+namespace MMGame.AI.FiniteStateMachine.Example
 {
     public class EventListenerDie : EventListener
     {
@@ -16,17 +18,17 @@
         void OnEnable()
         {
             // 注册侦听「死亡」事件（基于 MMGame 的事件系统支持）
-            this.AddEventListener("EventDie", OnDie);
+            this.AddEventListener(EventType.Die, OnDie);
         }
 
         void OnDisable()
         {
             // 注销侦听「死亡事件」
-            this.RemoveEventListener("EventDie", OnDie);
+            this.RemoveEventListener(EventType.Die, OnDie);
         }
 
         // 事件回调方法
-        private void OnDie(Event e)
+        private void OnDie(EventData e)
         {
             // do something
 
@@ -47,12 +49,8 @@
             // do something
         }
 
-        public override void ResetForSpawn()
-        {
-        }
+        public override void OnSpawn() {}
 
-        public override void ReleaseForDespawn()
-        {
-        }
+        public override void OnDespawn() {}
     }
 }

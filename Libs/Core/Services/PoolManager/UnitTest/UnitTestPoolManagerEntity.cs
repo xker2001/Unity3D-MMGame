@@ -25,12 +25,12 @@
             onSpawnCalled = false;
         }
 
-        public override void ResetForSpawn()
+        public override void OnSpawn()
         {
             onSpawnCalled = true;
         }
 
-        public override void ReleaseForDespawn()
+        public override void OnDespawn()
         {
             onDespawnCalled = true;
         }

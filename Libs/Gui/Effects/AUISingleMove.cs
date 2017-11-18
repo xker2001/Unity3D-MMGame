@@ -32,11 +32,11 @@ namespace MMGame.UI
                 tw.Kill();
             }
 
-            tw = transform.DOMove(toPosition, duration)
-                          .SetEase(easeType)
-                          .OnComplete(OnComplete)
-                          .SetAutoKill(false)
-                          .SetUpdate(UpdateType.Normal, true);
+            tw = Target.transform.DOMove(toPosition, duration)
+                       .SetEase(easeType)
+                       .OnComplete(SetSelfComplete)
+                       .SetAutoKill(false)
+                       .SetUpdate(UpdateType.Normal, true);
             tw.Play();
         }
 

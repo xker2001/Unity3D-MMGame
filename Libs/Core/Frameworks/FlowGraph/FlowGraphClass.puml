@@ -1,0 +1,58 @@
+@startuml
+ 
+skinparam backgroundcolor #FBFBFB
+ 
+skinparam class {
+    BackgroundColor #F3F3F3
+    BorderColor #333333
+    ArrowColor #333333
+    FontColor #333333
+    AttributeFontColor #333333
+    FontSize 14
+    FontName Consolas
+    FontStyle bold
+    AttributeFontSize 14
+    AttributeFontName Consolas
+}
+ 
+skinparam stereotype {
+    CBackgroundColor #D4EDD7
+    ABackgroundColor #C7EEF0
+    IBackgroundColor #D9D1F9
+    EBackgroundColor #F4C9C0
+}
+  
+skinparam note {
+    BackgroundColor #FDFDFD
+    BorderColor #333333
+    FontColor #333333
+    FontSize 14
+    FontName Consolas
+}
+ 
+skinparam shadowing false
+scale 1
+ 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+abstract class AFlowAction <<PoolBehaviour>> {
+    +bool IsPlaying { get; }
+    +bool IsSelfCompleted { get; }
+    +int Flags { get; protected set; }
+    +float Elapse { get; }
+    +void Play();
+    +void Stop();
+    #void SetSelfCompleted();
+    #{abstract} protected void ExecutePlay();
+    #{abstract} protected void ExecuteStop();
+}
+
+abstract class AFlowGraph extends AFlowAction {
+    #{abstract} protected void Design();
+    #virtual protected void OnEnable();
+    #virtual protected void OnDisable();
+    #void BindPlay(AFlowAction action, Func<bool> condition, float delay,int times);
+    #void BindStop(AFlowAction action, Func<bool> condition, float delay,int times);
+}
+ 
+@enduml

@@ -29,7 +29,14 @@ namespace MMGame.UI
         [SerializeField]
         private int loopTimes = -1;
 
+        private RectTransform rectTransform;
         private Tweener tw;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            rectTransform = Target.GetComponent<RectTransform>();
+        }
 
         protected override void OnDestroy()
         {
@@ -42,19 +49,19 @@ namespace MMGame.UI
             }
         }
 
-        protected override void InitPlaying() {}
+        protected override void PreparePlaying() {}
 
         protected override void PlayEffect()
         {
-            transform.localScale = new Vector3(@from.x, @from.y, 1);
+            rectTransform.localScale = new Vector3(@from.x, @from.y, 1);
 
             if (tw == null)
             {
-                tw = transform.DOScale(new Vector3(to.x, to.y, 1), duration)
-                              .SetEase(easeType)
-                              .OnComplete(OnComplete)
-                              .SetAutoKill(false)
-                              .SetUpdate(UpdateType.Normal, true);
+                tw = rectTransform.DOScale(new Vector3(to.x, to.y, 1), duration)
+                                  .SetEase(easeType)
+                                  .OnComplete(SetSelfComplete)
+                                  .SetAutoKill(false)
+                                  .SetUpdate(UpdateType.Normal, true);
 
                 if (loop)
                 {

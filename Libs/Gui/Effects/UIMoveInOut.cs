@@ -43,12 +43,12 @@ namespace MMGame.UI
             }
         }
 
-        protected override void InitPlaying()
+        protected override void PreparePlaying()
         {
-            @from = GetOutScreenPosition(fromAnchor);
-            to = GetOutScreenPosition(toAnchor);
+            @from = GetOutScreenPosition(fromAnchor, rectTransform.position);
+            to = GetOutScreenPosition(toAnchor, rectTransform.position);
             centre = GetOriginalPosition();
-            transform.position = @from;
+            rectTransform.position = @from;
         }
 
         protected override void PlayEffect()
@@ -59,10 +59,10 @@ namespace MMGame.UI
             }
 
             seq = DOTween.Sequence()
-                         .Append(transform.DOMove(centre, inDuration).SetEase(inEaseType))
+                         .Append(rectTransform.DOMove(centre, inDuration).SetEase(inEaseType))
                          .AppendInterval(showDuration)
-                         .Append(transform.DOMove(to, outDuration).SetEase(outEaseType))
-                         .OnComplete(OnComplete)
+                         .Append(rectTransform.DOMove(to, outDuration).SetEase(outEaseType))
+                         .OnComplete(SetSelfComplete)
                          .SetAutoKill(false)
                          .SetUpdate(UpdateType.Normal, true);
             seq.Play();

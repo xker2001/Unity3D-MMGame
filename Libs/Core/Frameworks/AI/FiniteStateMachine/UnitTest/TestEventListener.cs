@@ -1,20 +1,16 @@
-﻿namespace MMGame.AI.FiniteStateMachine.UnitTest
+﻿using MMGame.Event;
+
+namespace MMGame.AI.FiniteStateMachine.UnitTest
 {
     public class TestEventListener : EventListener
     {
-        private string eventName = "UnitTest";
-
-        public bool OnEventCalled { get; private set; }
-        public bool OnPauseCalled { get; private set; }
-        public bool OnResumeCalled { get; private set; }
+        public bool FlagEventCalled { get; private set; }
+        public bool FlagPauseCalled { get; private set; }
+        public bool FlagResumeCalled { get; private set; }
         public int EnableTimes { get; private set; }
         public int DisableTimes { get; private set; }
 
-        public string EventName
-        {
-            get { return eventName; }
-            private set { eventName = value; }
-        }
+        public int EventType { get; private set; }
 
         public string Info { get; private set; }
 
@@ -24,46 +20,42 @@
             return this;
         }
 
-        public TestEventListener SetEventName(string name)
+        public TestEventListener SetEventType(int id)
         {
-            EventName = name;
+            EventType = id;
             return this;
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
-            this.AddEventListener(EventName, OnEvent);
+            this.AddEventListener(EventType, OnEvent);
             EnableTimes += 1;
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
-            this.RemoveEventListener(EventName, OnEvent);
+            this.RemoveEventListener(EventType, OnEvent);
             DisableTimes += 1;
         }
 
         protected override void OnPause()
         {
-            OnPauseCalled = true;
+            FlagPauseCalled = true;
         }
 
         protected override void OnResume()
         {
-            OnResumeCalled = true;
+            FlagResumeCalled = true;
         }
 
-        private void OnEvent(Event e)
+        private void OnEvent(EventData e)
         {
-            OnResumeCalled = true;
+            FlagResumeCalled = true;
             IsTriggered = true;
         }
 
-        public override void ResetForSpawn()
-        {
-        }
+        public override void OnSpawn() {}
 
-        public override void ReleaseForDespawn()
-        {
-        }
+        public override void OnDespawn() {}
     }
 }

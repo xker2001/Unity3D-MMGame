@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Sirenix.Utilities;
 
 namespace MMGame.UI
 {
@@ -19,7 +20,12 @@ namespace MMGame.UI
         }
 
         [SerializeField]
-        private bool executeOnEnable;
+        private bool executeOnEnable = true;
+
+        [Tooltip("在 disable 时将目标控件设置为 disabled，防止目标控件在父级再次激活时跟随激活，跳过控制执行动作（如播放激活音效）。"
+                 + "目标控件的原始状态应当设置为 disabled，保证其父级第一次激活时不会跟随激活。")]
+        [SerializeField]
+        private bool autoDisableTargets = true;
 
         [SerializeField]
         private DelayParameters[] delays;
@@ -31,6 +37,16 @@ namespace MMGame.UI
             if (executeOnEnable)
             {
                 DelayEnable();
+            }
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            if (autoDisableTargets)
+            {
+                delays.ForEach(dp => dp.Target.SetActive(false));
             }
         }
 

@@ -1,9 +1,13 @@
-﻿namespace MMGame.UI
+﻿using UnityEngine;
+
+namespace MMGame.UI
 {
     /// <summary>
     /// 界面特效组播放控制类。
+    /// 注意，这里要求效果组件和组播放控制组件在同一个物体上。
+    /// TODO: 由于现在效果组件可以不放在目标物体上，这里有待增强。
     /// </summary>
-    public class UIEffectGroupPlayer : EasyUIBehaviour
+    public class UIEffectGroupPlayer : MonoBehaviour
     {
         private AUIEffect[] effects;
 

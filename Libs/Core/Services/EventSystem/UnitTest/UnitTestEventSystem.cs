@@ -1,18 +1,16 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace MMGame
+namespace MMGame.Event.UnitTest
 {
-    public class ListenerEvent : Event
+    public class ListenerEventData : EventData
     {
         public List<UnitTestEventHandle> Listeners { get; set; }
     }
 
-    public class AEvent : Event
-    {
-    }
+    public class AEventData : EventData {}
 
-    public class UnitTestEventSystem : UnitTest
+    public class UnitTestEventSystem : MMGame.UnitTest
     {
         public UnitTestEventHandle A;
         public UnitTestEventHandle A1;
@@ -30,48 +28,43 @@ namespace MMGame
         public UnitTestEventHandle B21;
         public UnitTestEventHandle B22;
 
-        private string eventName = "EvtUnitTestEventSystem";
-
-
         private void AddAllListeners()
         {
-            A.AddEventListener(eventName, A.OnEvent);
-            A1.AddEventListener(eventName, A1.OnEvent);
-            A11a.AddEventListener(eventName, A11a.OnEvent);
-            A11b.AddEventListener(eventName, A11b.OnEvent);
-            A12.AddEventListener(eventName, A12.OnEvent);
-            A2.AddEventListener(eventName, A2.OnEvent);
-            A21.AddEventListener(eventName, A21.OnEvent);
-            A22.AddEventListener(eventName, A22.OnEvent);
-            B.AddEventListener(eventName, B.OnEvent);
-            B1.AddEventListener(eventName, B1.OnEvent);
-            B11.AddEventListener(eventName, B11.OnEvent);
-            B12.AddEventListener(eventName, B12.OnEvent);
-            B2.AddEventListener(eventName, B2.OnEvent);
-            B21.AddEventListener(eventName, B21.OnEvent);
-            B22.AddEventListener(eventName, B22.OnEvent);
+            A.AddEventListener(UnitTestEventType.TestEventType, A.OnEvent);
+            A1.AddEventListener(UnitTestEventType.TestEventType, A1.OnEvent);
+            A11a.AddEventListener(UnitTestEventType.TestEventType, A11a.OnEvent);
+            A11b.AddEventListener(UnitTestEventType.TestEventType, A11b.OnEvent);
+            A12.AddEventListener(UnitTestEventType.TestEventType, A12.OnEvent);
+            A2.AddEventListener(UnitTestEventType.TestEventType, A2.OnEvent);
+            A21.AddEventListener(UnitTestEventType.TestEventType, A21.OnEvent);
+            A22.AddEventListener(UnitTestEventType.TestEventType, A22.OnEvent);
+            B.AddEventListener(UnitTestEventType.TestEventType, B.OnEvent);
+            B1.AddEventListener(UnitTestEventType.TestEventType, B1.OnEvent);
+            B11.AddEventListener(UnitTestEventType.TestEventType, B11.OnEvent);
+            B12.AddEventListener(UnitTestEventType.TestEventType, B12.OnEvent);
+            B2.AddEventListener(UnitTestEventType.TestEventType, B2.OnEvent);
+            B21.AddEventListener(UnitTestEventType.TestEventType, B21.OnEvent);
+            B22.AddEventListener(UnitTestEventType.TestEventType, B22.OnEvent);
         }
-
 
         private void RemoveAllListeners()
         {
-            A.RemoveEventListener(eventName, A.OnEvent);
-            A1.RemoveEventListener(eventName, A1.OnEvent);
-            A11a.RemoveEventListener(eventName, A11a.OnEvent);
-            A11b.RemoveEventListener(eventName, A11b.OnEvent);
-            A12.RemoveEventListener(eventName, A12.OnEvent);
-            A2.RemoveEventListener(eventName, A2.OnEvent);
-            A21.RemoveEventListener(eventName, A21.OnEvent);
-            A22.RemoveEventListener(eventName, A22.OnEvent);
-            B.RemoveEventListener(eventName, B.OnEvent);
-            B1.RemoveEventListener(eventName, B1.OnEvent);
-            B11.RemoveEventListener(eventName, B11.OnEvent);
-            B12.RemoveEventListener(eventName, B12.OnEvent);
-            B2.RemoveEventListener(eventName, B2.OnEvent);
-            B21.RemoveEventListener(eventName, B21.OnEvent);
-            B22.RemoveEventListener(eventName, B22.OnEvent);
+            A.RemoveEventListener(UnitTestEventType.TestEventType, A.OnEvent);
+            A1.RemoveEventListener(UnitTestEventType.TestEventType, A1.OnEvent);
+            A11a.RemoveEventListener(UnitTestEventType.TestEventType, A11a.OnEvent);
+            A11b.RemoveEventListener(UnitTestEventType.TestEventType, A11b.OnEvent);
+            A12.RemoveEventListener(UnitTestEventType.TestEventType, A12.OnEvent);
+            A2.RemoveEventListener(UnitTestEventType.TestEventType, A2.OnEvent);
+            A21.RemoveEventListener(UnitTestEventType.TestEventType, A21.OnEvent);
+            A22.RemoveEventListener(UnitTestEventType.TestEventType, A22.OnEvent);
+            B.RemoveEventListener(UnitTestEventType.TestEventType, B.OnEvent);
+            B1.RemoveEventListener(UnitTestEventType.TestEventType, B1.OnEvent);
+            B11.RemoveEventListener(UnitTestEventType.TestEventType, B11.OnEvent);
+            B12.RemoveEventListener(UnitTestEventType.TestEventType, B12.OnEvent);
+            B2.RemoveEventListener(UnitTestEventType.TestEventType, B2.OnEvent);
+            B21.RemoveEventListener(UnitTestEventType.TestEventType, B21.OnEvent);
+            B22.RemoveEventListener(UnitTestEventType.TestEventType, B22.OnEvent);
         }
-
 
         private void Reset()
         {
@@ -97,67 +90,66 @@ namespace MMGame
         [TestMethod]
         public void TestEventPool()
         {
-            ListenerEvent le = null;
+            ListenerEventData le = null;
 
             for (int i = 0; i < 3; i++)
             {
-                le = EventPool.New<ListenerEvent>();
+                le = EventPool.New<ListenerEventData>();
             }
 
             AreEqual(EventPool.TotalCreated, 3);
 
-            EventPool.New<ListenerEvent>();
+            EventPool.New<ListenerEventData>();
             AreEqual(EventPool.TotalCreated, 4);
 
             EventPool.Delete(le);
-            EventPool.New<ListenerEvent>();
+            EventPool.New<ListenerEventData>();
             AreEqual(EventPool.TotalCreated, 4);
 
-            AEvent ae = null;
+            AEventData ae = null;
 
             for (int i = 0; i < 3; i++)
             {
-                ae = EventPool.New<AEvent>();
+                ae = EventPool.New<AEventData>();
             }
 
             AreEqual(EventPool.TotalCreated, 7);
 
-            EventPool.New<AEvent>();
+            EventPool.New<AEventData>();
             AreEqual(EventPool.TotalCreated, 8);
 
             EventPool.Delete(ae);
-            EventPool.New<AEvent>();
+            EventPool.New<AEventData>();
             AreEqual(EventPool.TotalCreated, 8);
 
             EventPool.Delete(ae);
-            EventPool.New<AEvent>();
+            EventPool.New<AEventData>();
             AreEqual(EventPool.TotalCreated, 8);
 
             EventPool.Delete(ae);
-            EventPool.New<AEvent>();
+            EventPool.New<AEventData>();
             AreEqual(EventPool.TotalCreated, 8);
         }
 
         [TestMethod]
         public void AddRemoveListener()
         {
-            IsFalse(A11a.HasEventListener(eventName));
+            IsFalse(A11a.HasEventListener(UnitTestEventType.TestEventType));
 
-            A11a.AddEventListener(eventName, A11a.OnEvent);
-            IsTrue(A11a.HasEventListener(eventName));
+            A11a.AddEventListener(UnitTestEventType.TestEventType, A11a.OnEvent);
+            IsTrue(A11a.HasEventListener(UnitTestEventType.TestEventType));
 
-            A11a.RemoveEventListener(eventName, A11a.OnEvent);
-            IsFalse(A11a.HasEventListener(eventName));
+            A11a.RemoveEventListener(UnitTestEventType.TestEventType, A11a.OnEvent);
+            IsFalse(A11a.HasEventListener(UnitTestEventType.TestEventType));
 
             Reset();
         }
-
 
         [TestMethod]
         public void SendToAll()
         {
             AddAllListeners();
-            this.SendEvent(eventName, EventPool.New<AEvent>());
+            this.SendEvent(UnitTestEventType.TestEventType, EventPool.New<AEventData>());
 
             AreEqual(A.Triggered, 1);
             AreEqual(A1.Triggered, 1);
@@ -180,18 +172,13 @@ namespace MMGame
             Reset();
         }
 
-
         [TestMethod]
         public void SendToListWhithoutChildren()
         {
             AddAllListeners();
 
-            List<GameObject> targets = new List<GameObject>();
-            targets.Add(A1.gameObject);
-            targets.Add(A12.gameObject);
-            targets.Add(B.gameObject);
-            targets.Add(B22.gameObject);
-            this.SendEvent(eventName, EventPool.New<AEvent>(), targets);
+            var targets = new List<GameObject> {A1.gameObject, A12.gameObject, B.gameObject, B22.gameObject};
+            this.SendEvent(UnitTestEventType.TestEventType, EventPool.New<AEventData>(), targets);
 
             AreNotEqual(A.Triggered, 1);
             AreEqual(A1.Triggered, 1);
@@ -213,18 +200,13 @@ namespace MMGame
             Reset();
         }
 
-
         [TestMethod]
         public void SendToListWhithChildren()
         {
             AddAllListeners();
 
-            List<GameObject> targets = new List<GameObject>();
-            targets.Add(A1.gameObject);
-            targets.Add(A12.gameObject);
-            targets.Add(B.gameObject);
-            targets.Add(B22.gameObject);
-            this.SendEventWithChildren(eventName, EventPool.New<AEvent>(), targets);
+            var targets = new List<GameObject> {A1.gameObject, A12.gameObject, B.gameObject, B22.gameObject};
+            this.SendEventWithChildren(UnitTestEventType.TestEventType, EventPool.New<AEventData>(), targets);
 
             AreNotEqual(A.Triggered, 1);
             AreEqual(A1.Triggered, 1);
@@ -246,13 +228,11 @@ namespace MMGame
             Reset();
         }
 
-
         [TestMethod]
         public void SendToSingleWhithoutChildren()
         {
             AddAllListeners();
-
-            this.SendEvent(eventName, EventPool.New<AEvent>(), A.gameObject);
+            this.SendEvent(UnitTestEventType.TestEventType, EventPool.New<AEventData>(), A.gameObject);
 
             AreEqual(A.Triggered, 1);
             AreNotEqual(A1.Triggered, 1);
@@ -274,13 +254,11 @@ namespace MMGame
             Reset();
         }
 
-
         [TestMethod]
         public void SendToSingleWhithChildren()
         {
             AddAllListeners();
-
-            this.SendEventWithChildren(eventName, EventPool.New<AEvent>(), A.gameObject);
+            this.SendEventWithChildren(UnitTestEventType.TestEventType, EventPool.New<AEventData>(), A.gameObject);
 
             AreEqual(A.Triggered, 1);
             AreEqual(A1.Triggered, 1);
@@ -302,13 +280,12 @@ namespace MMGame
             Reset();
         }
 
-
         [TestMethod]
         public void SendToChildren()
         {
             AddAllListeners();
 
-            A.SendEventToChildren(eventName, EventPool.New<AEvent>());
+            A.SendEventToChildren(UnitTestEventType.TestEventType, EventPool.New<AEventData>());
 
             AreNotEqual(A.Triggered, 1);
             AreEqual(A1.Triggered, 1);
@@ -330,12 +307,11 @@ namespace MMGame
             Reset();
         }
 
-
         [TestMethod]
         public void DontSendToSelf()
         {
             AddAllListeners();
-            A11a.SendEvent(eventName, EventPool.New<AEvent>());
+            A11a.SendEvent(UnitTestEventType.TestEventType, EventPool.New<AEventData>());
 
             AreEqual(A.Triggered, 1);
             AreEqual(A1.Triggered, 1);
@@ -357,18 +333,13 @@ namespace MMGame
             Reset();
         }
 
-
         [TestMethod]
         public void DontSendToOneMultipleTimes()
         {
             AddAllListeners();
 
-            List<GameObject> targets = new List<GameObject>();
-            targets.Add(A.gameObject);
-            targets.Add(A1.gameObject);
-            targets.Add(A11a.gameObject);
-            targets.Add(A12.gameObject);
-            this.SendEventWithChildren(eventName, EventPool.New<AEvent>(), targets);
+            var targets = new List<GameObject> {A.gameObject, A1.gameObject, A11a.gameObject, A12.gameObject};
+            this.SendEventWithChildren(UnitTestEventType.TestEventType, EventPool.New<AEventData>(), targets);
 
             AreEqual(A.Triggered, 1);
             AreEqual(A1.Triggered, 1);
@@ -390,24 +361,17 @@ namespace MMGame
             Reset();
         }
 
-
         [TestMethod]
         public void AddListenerDuringSending()
         {
-            A11a.AddEventListener(eventName, A11a.OnEventAddListeners);
+            A11a.AddEventListener(UnitTestEventType.TestEventType, A11a.OnEventAddListeners);
 
-            List<UnitTestEventHandle> listeners = new List<UnitTestEventHandle>();
-            listeners.Add(A);
-            listeners.Add(B);
-            listeners.Add(B11);
-            listeners.Add(B22);
+            var listeners = new List<UnitTestEventHandle> {A, B, B11, B22};
 
-            List<GameObject> targets = new List<GameObject>();
-            targets.Add(A.gameObject);
-            targets.Add(B.gameObject);
-            ListenerEvent e = EventPool.New<ListenerEvent>();
+            var targets = new List<GameObject> {A.gameObject, B.gameObject};
+            var e = EventPool.New<ListenerEventData>();
             e.Listeners = listeners;
-            this.SendEventWithChildren(eventName, e, targets);
+            this.SendEventWithChildren(UnitTestEventType.TestEventType, e, targets);
 
             // will be traversed by order
             AreNotEqual(A.Triggered, 1);
@@ -426,39 +390,32 @@ namespace MMGame
             AreNotEqual(B21.Triggered, 1);
             AreNotEqual(B22.Triggered, 1);
 
-            A11a.RemoveEventListener(eventName, A11a.OnEventAddListeners);
-            A.RemoveEventListener(eventName, A.OnEvent);
-            B.RemoveEventListener(eventName, B.OnEvent);
-            B11.RemoveEventListener(eventName, B11.OnEvent);
-            B22.RemoveEventListener(eventName, B22.OnEvent);
+            A11a.RemoveEventListener(UnitTestEventType.TestEventType, A11a.OnEventAddListeners);
+            A.RemoveEventListener(UnitTestEventType.TestEventType, A.OnEvent);
+            B.RemoveEventListener(UnitTestEventType.TestEventType, B.OnEvent);
+            B11.RemoveEventListener(UnitTestEventType.TestEventType, B11.OnEvent);
+            B22.RemoveEventListener(UnitTestEventType.TestEventType, B22.OnEvent);
 
             Reset();
         }
 
-
         [TestMethod]
         public void RemoveListenerDuringSending()
         {
-            A11a.AddEventListener(eventName, A11a.OnEventRemoveListeners);
-            A.AddEventListener(eventName, A.OnEvent);
-            B.AddEventListener(eventName, B.OnEvent);
-            B11.AddEventListener(eventName, B11.OnEvent);
-            B22.AddEventListener(eventName, B22.OnEvent);
+            A11a.AddEventListener(UnitTestEventType.TestEventType, A11a.OnEventRemoveListeners);
+            A.AddEventListener(UnitTestEventType.TestEventType, A.OnEvent);
+            B.AddEventListener(UnitTestEventType.TestEventType, B.OnEvent);
+            B11.AddEventListener(UnitTestEventType.TestEventType, B11.OnEvent);
+            B22.AddEventListener(UnitTestEventType.TestEventType, B22.OnEvent);
 
-            List<UnitTestEventHandle> listeners = new List<UnitTestEventHandle>();
-            listeners.Add(A);
-            listeners.Add(B);
-            listeners.Add(B11);
-            listeners.Add(B22);
+            var listeners = new List<UnitTestEventHandle> {A, B, B11, B22};
 
-            List<GameObject> targets = new List<GameObject>();
-            targets.Add(A.gameObject);
-            targets.Add(B.gameObject);
+            var targets = new List<GameObject> {A.gameObject, B.gameObject};
 
-            ListenerEvent e = EventPool.New<ListenerEvent>();
+            var e = EventPool.New<ListenerEventData>();
             e.Listeners = listeners;
-            this.SendEventWithChildren(eventName, e, targets);
-            A11a.RemoveEventListener(eventName, A11a.OnEventRemoveListeners);
+            this.SendEventWithChildren(UnitTestEventType.TestEventType, e, targets);
+            A11a.RemoveEventListener(UnitTestEventType.TestEventType, A11a.OnEventRemoveListeners);
 
             AreEqual(A.Triggered, 1);
             AreNotEqual(A1.Triggered, 1);

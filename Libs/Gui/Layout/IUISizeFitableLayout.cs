@@ -12,12 +12,12 @@ namespace MMGame.UI
         /// <summary>
         /// 内容大小改变事件。
         /// </summary>
-        event Action<Vector2> SizeChanged;
+        event Action<float, float> SizeChanged;
 
         /// <summary>
         /// 内容的大小。
         /// </summary>
-        Vector2 SizeDelta { get; }
+        Vector2 Size { get; }
 
         /*
         /// <summary>

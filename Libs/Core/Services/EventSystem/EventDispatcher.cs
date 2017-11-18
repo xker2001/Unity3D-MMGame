@@ -1,26 +1,24 @@
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-namespace MMGame
+namespace MMGame.Event
 {
-    public delegate void EventCallback(Event e);
+    public delegate void EventCallback(EventData e);
 
-    /**
-     * Event Dispatcher
-     */
-
+    /// <summary>
+    /// 事件分发中心。
+    /// </summary>
     public static class EventDispatcher
     {
         private struct SenderParameters
         {
-            public string Type;
-            public GameObject Listener;
-            public EventCallback Callback;
-            public bool IsAdd; // this listener is to be added or removed
+            public readonly int Type;
+            public readonly GameObject Listener;
+            public readonly EventCallback Callback;
+            public readonly bool IsAdd; // this listener is to be added or removed
 
-            public SenderParameters(string type, GameObject listener, EventCallback callback, bool isAdd)
+            public SenderParameters(int type, GameObject listener, EventCallback callback, bool isAdd)
             {
                 Type = type;
                 Listener = listener;
@@ -45,7 +43,7 @@ namespace MMGame
 
             public override bool Equals(System.Object obj)
             {
-                if (obj == null || !(obj is SenderParameters))
+                if (!(obj is SenderParameters))
                 {
                     return false;
                 }
@@ -66,24 +64,26 @@ namespace MMGame
             }
         }
 
-        /**
-         * Dic to store all event registers
-         * Dictionary<type, Dictionary<sender, List<callback>>>
-         */
+        /// <summary>
+        /// 用于存放所有事件注册信息的字典。
+        /// Dictionary<type, Dictionary<sender, List<callback>>>
+        /// </summary>
+        private static readonly Dictionary<int, Dictionary<GameObject, List<EventCallback>>> eventTable =
+            new Dictionary<int, Dictionary<GameObject, List<EventCallback>>>();
 
-        private static Dictionary<string, Dictionary<GameObject, List<EventCallback>>> eventTable =
-            new Dictionary<string, Dictionary<GameObject, List<EventCallback>>>();
+        /// <summary>
+        /// 待添加或删除的侦听者队列。
+        /// </summary>
+        private static readonly List<SenderParameters> addRemoveQueue = new List<SenderParameters>();
 
-        /**
-         * Queue of listeners to be added and removed
-         */
-        private static List<SenderParameters> addRemoveQueue = new List<SenderParameters>();
-
-        /**
-         * sender counter
-         */
+        /// <summary>
+        /// 发送者的数量。
+        /// </summary>
         private static int senderCount;
 
+        /// <summary>
+        /// 当发送者数量被设置为 0 时可以安全执行添加移除侦听者的操作。
+        /// </summary>
         private static int SenderCount
         {
             get { return senderCount; }
@@ -98,16 +98,13 @@ namespace MMGame
             }
         }
 
-        // ------------------------------------------------------
-        // public methods
-
-        /**
-         * Get the total number of listeners
-         */
-
+        /// <summary>
+        /// 获取侦听者的总数。
+        /// </summary>
+        /// <returns>侦听者总数。</returns>
         public static int GetListernerNumber()
         {
-            List<GameObject> allListeners = new List<GameObject>();
+            var allListeners = new List<GameObject>();
 
             foreach (Dictionary<GameObject, List<EventCallback>> listeners in eventTable.Values)
             {
@@ -123,12 +120,14 @@ namespace MMGame
             return allListeners.Count;
         }
 
-        /**
-         * Register a new event listener
-         * Add or remove an event listener during another event sending will not takes effect immediately.
-         */
-
-        public static void AddEventListener(GameObject listener, string type, EventCallback callback)
+        /// <summary>
+        /// 注册一个新的事件侦听。
+        /// 在事件流中添加或移除事件侦听不会立即生效，会在本次事件流结束之后进行。
+        /// </summary>
+        /// <param name="listener">侦听者。</param>
+        /// <param name="type">事件类型。</param>
+        /// <param name="callback">事件回调。</param>
+        public static void AddEventListener(GameObject listener, int type, EventCallback callback)
         {
             if (SenderCount == 0)
             {
@@ -140,11 +139,13 @@ namespace MMGame
             }
         }
 
-        /**
-         * Remove an event listener
-         */
-
-        public static void RemoveEventListener(GameObject listener, string type, EventCallback callback)
+        /// <summary>
+        /// 注销一个事件侦听。
+        /// </summary>
+        /// <param name="listener">侦听者。</param>
+        /// <param name="type">事件类型。</param>
+        /// <param name="callback">事件回调。</param>
+        public static void RemoveEventListener(GameObject listener, int type, EventCallback callback)
         {
             if (SenderCount == 0)
             {
@@ -156,11 +157,13 @@ namespace MMGame
             }
         }
 
-        /**
-         * Check if an event listener exists or not
-         */
-
-        public static bool HasEventListener(Component component, string type)
+        /// <summary>
+        /// 检查指定组件是否侦听了指定的事件类型。
+        /// </summary>
+        /// <param name="component">组件实例。</param>
+        /// <param name="type">事件类型。</param>
+        /// <returns>返回 true 或 false。</returns>
+        public static bool HasEventListener(Component component, int type)
         {
             Dictionary<GameObject, List<EventCallback>> listeners;
             List<EventCallback> callbacks;
@@ -182,13 +185,15 @@ namespace MMGame
             return false;
         }
 
-        /**
-         * Send event to all registered listeners
-         */
-
+        /// <summary>
+        /// 发送一个事件给所有侦听者。
+        /// </summary>
+        /// <param name="sender">事件发送者。</param>
+        /// <param name="type">事件类型。</param>
+        /// <param name="e">事件数据。</param>
         public static void SendEvent(object sender,
-                                     string type,
-                                     Event e)
+                                     int type,
+                                     EventData e)
         {
             Dictionary<GameObject, List<EventCallback>> listeners;
 
@@ -216,13 +221,17 @@ namespace MMGame
             SenderCount -= 1;
         }
 
-        /**
-         * Send event to specified receivers (GameObject)
-         */
-
+        /// <summary>
+        /// 发送一个事件给 GameObject 接收者列表。
+        /// </summary>
+        /// <param name="sender">事件发送者。</param>
+        /// <param name="type">事件类型。</param>
+        /// <param name="e">事件数据。</param>
+        /// <param name="receivers">接收者列表。</param>
+        /// <param name="includeChildren">是否发送给接收者的子物体。</param>
         public static void SendEvent(object sender,
-                                     string type,
-                                     Event e,
+                                     int type,
+                                     EventData e,
                                      List<GameObject> receivers,
                                      bool includeChildren = false)
         {
@@ -251,13 +260,17 @@ namespace MMGame
             SenderCount -= 1;
         }
 
-        /**
-        * Send event to specified receivers (Component)
-        */
-
+        /// <summary>
+        /// 发送一个事件给 Component 接收者列表。
+        /// </summary>
+        /// <param name="sender">事件发送者。</param>
+        /// <param name="type">事件类型。</param>
+        /// <param name="e">事件数据。</param>
+        /// <param name="receivers">接收者列表。</param>
+        /// <param name="includeChildren">是否发送给接收者的子物体。</param>
         public static void SendEvent(object sender,
-                                     string type,
-                                     Event e,
+                                     int type,
+                                     EventData e,
                                      List<Component> receivers,
                                      bool includeChildren = false)
         {
@@ -286,13 +299,17 @@ namespace MMGame
             SenderCount -= 1;
         }
 
-        /**
-         * Send event to specified receiver
-         */
-
+        /// <summary>
+        /// 发送一个事件给指定的 GameObject 接收者。
+        /// </summary>
+        /// <param name="sender">事件发送者。</param>
+        /// <param name="type">事件类型。</param>
+        /// <param name="e">事件数据。</param>
+        /// <param name="receiver">接收者。</param>
+        /// <param name="includeChildren">是否发送给接收者的子物体。</param>
         public static void SendEvent(object sender,
-                                     string type,
-                                     Event e,
+                                     int type,
+                                     EventData e,
                                      GameObject receiver,
                                      bool includeChildren = false)
         {
@@ -317,13 +334,16 @@ namespace MMGame
             SenderCount -= 1;
         }
 
-        /**
-         * Send event to all receiver's children (exclude receiver)
-         */
-
+        /// <summary>
+        /// 发送事件给接收者的所有子物体（不包含接收者）。
+        /// </summary>
+        /// <param name="sender">事件发送者。</param>
+        /// <param name="type">事件类型。</param>
+        /// <param name="e">事件数据。</param>
+        /// <param name="receiver">事件接收者。</param>
         public static void SendEventToChildren(object sender,
-                                               string type,
-                                               Event e,
+                                               int type,
+                                               EventData e,
                                                GameObject receiver)
         {
             Dictionary<GameObject, List<EventCallback>> listeners;
@@ -354,15 +374,19 @@ namespace MMGame
         // ------------------------------------------------------
         // private methods
 
-        /**
-         * Send event to a receiver and it's children
-         */
-
+        /// <summary>
+        /// 发送事件给指定接收者（及其子物体）。
+        /// </summary>
+        /// <param name="sender">事件发送者。</param>
+        /// <param name="e">事件数据。</param>
+        /// <param name="receiver">事件接收者。</param>
+        /// <param name="listeners">事件所有侦听者列表。</param>
+        /// <param name="includeChildren">是否包含接收者子物体。</param>
         private static void SendEventToGameObject(object sender,
-                                                  Event e,
+                                                  EventData e,
                                                   GameObject receiver,
                                                   Dictionary<GameObject, List<EventCallback>> listeners,
-                                                  bool includeChildren = false)
+                                                  bool includeChildren)
         {
             if (e.IsStopped || receiver == null)
             {
@@ -398,10 +422,9 @@ namespace MMGame
             }
         }
 
-        /**
-         * Apply add & remove queue
-         */
-
+        /// <summary>
+        /// 处理待添加和待移除的事件侦听队列。
+        /// </summary>
         private static void ApplyAddRemoveListeners()
         {
             for (int i = 0; i < addRemoveQueue.Count; i++)
@@ -420,11 +443,13 @@ namespace MMGame
             addRemoveQueue.Clear();
         }
 
-        /**
-        * Register a new event listener
-        */
-
-        private static void DoAddEventListener(GameObject listener, string type, EventCallback callback)
+        /// <summary>
+        /// 执行添加一个事件侦听。
+        /// </summary>
+        /// <param name="listener">事件侦听者。</param>
+        /// <param name="type">事件类型。</param>
+        /// <param name="callback">事件回调。</param>
+        private static void DoAddEventListener(GameObject listener, int type, EventCallback callback)
         {
             Dictionary<GameObject, List<EventCallback>> listeners;
 
@@ -434,7 +459,6 @@ namespace MMGame
                 eventTable.Add(type, listeners);
             }
 
-
             List<EventCallback> callbacks;
 
             if (!listeners.TryGetValue(listener, out callbacks))
@@ -443,10 +467,9 @@ namespace MMGame
                 listeners.Add(listener, callbacks);
             }
 
-
             if (callbacks.Contains(callback))
             {
-                UnityEngine.Debug.LogError("Callback function has been registerd to this event type already!");
+                Debug.LogError("Callback function has been registerd to this event type already!");
             }
             else
             {
@@ -454,14 +477,15 @@ namespace MMGame
             }
         }
 
-        /**
-         * Remove an event listener
-         * Some times we have to remove nonexistent listener. For example we add event listener in
-         * OnEnable and remove it in OnDisable when pool manager does a continous enable
-         * and disable.
-         */
-
-        private static void DoRemoveEventListener(GameObject listener, string type, EventCallback callback)
+        /// <summary>
+        /// 执行注销一个事件侦听。
+        /// 有时候我们不可避免会试图移除不存在的侦听者。比如我们在 OnEnable 中添加侦听后立即又在 OnDisable 中
+        /// 移除了该侦听（如 PoolManager 执行了连续的 enable 和 disable 操作），因此这种情况不抛出错误。
+        ///  </summary>
+        /// <param name="listener">事件侦听者。</param>
+        /// <param name="type">事件类型。</param>
+        /// <param name="callback">事件回调。</param>
+        private static void DoRemoveEventListener(GameObject listener, int type, EventCallback callback)
         {
             Dictionary<GameObject, List<EventCallback>> listeners;
             List<EventCallback> callbacks;

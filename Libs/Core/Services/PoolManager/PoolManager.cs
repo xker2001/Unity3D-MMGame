@@ -217,8 +217,7 @@ namespace MMGame
             else
             {
                 throw new ApplicationException(string.Format(
-                                                             "PoolManager.GetItems: pool named {0} does not exist!",
-                                                             poolName));
+                                                   "PoolManager.GetItems: pool named {0} does not exist!", poolName));
             }
         }
 
@@ -239,8 +238,7 @@ namespace MMGame
             else
             {
                 throw new ApplicationException(string.Format(
-                                                             "PoolManager.GetItems: pool named {0} does not exist!",
-                                                             poolName));
+                                                   "PoolManager.GetItems: pool named {0} does not exist!", poolName));
             }
         }
 
@@ -333,7 +331,7 @@ namespace MMGame
                 xform.localScale = comp.OriginalScale;
             }
 
-            // 调用 PoolBehaviour 组件的 ResetForSpawn() 方法
+            // 调用 PoolBehaviour 组件的 OnSpawn() 方法
             comp.OnSpawn();
 
             // 激活这个实例。
@@ -344,7 +342,6 @@ namespace MMGame
 
             return xform;
         }
-
 
         /// <summary>
         /// 创建一个新的物体并挂接一个 PoolEntity 组件。
@@ -365,7 +362,7 @@ namespace MMGame
             if (count >= Instance.maxCount)
             {
                 throw new ApplicationException(
-                                               "POOL MANAGER: \nThe number of game objects has reached its limit! Try to increase the Max Count of PoolManager.");
+                    "POOL MANAGER: \nThe number of game objects has reached its limit! Try to increase the Max Count of PoolManager.");
             }
 
             // 创建新的实例
@@ -491,8 +488,8 @@ namespace MMGame
             if (!comp)
             {
                 throw new ApplicationException(string.Format(
-                                                             "Trying to despawn a game object that was not spawned by pool manager: {0}",
-                                                             xform.name));
+                                                   "Trying to despawn a game object that was not spawned by pool manager: {0}",
+                                                   xform.name));
             }
 
             Despawn(comp.Index, reparent);
@@ -510,7 +507,9 @@ namespace MMGame
 
             if (!comp)
             {
+#if !UNITY_EDITOR
                 Debug.Log("It seems that the whole object pool has been destroyed.");
+#endif
                 return;
             }
 
@@ -520,15 +519,15 @@ namespace MMGame
             if (comp.IsDespawned)
             {
                 throw new ApplicationException(string.Format(
-                                                             "Game object seems to be despawned already: {0}",
-                                                             GetByIndex(index).name));
+                                                   "Game object seems to be despawned already: {0}",
+                                                   GetByIndex(index).name));
             }
 
             prefabPool.DisabledPool.Push(index);
             transformPool.EnabledPool.Remove(index);
             transformPool.DisabledPool.Add(index);
 
-            // 1. 调用所有 PoolBehaviour 组件的 ReleaseForDespawn() 方法
+            // 1. 调用所有 PoolBehaviour 组件的 OnDespawn() 方法
             // 2. 特定类型的 PoolEntity 有时候需要在 Despawn 时执行一些特定的工作，如 PoolParticle 清除粒子等
             comp.OnDespawn();
             comp.gameObject.SetActive(false);

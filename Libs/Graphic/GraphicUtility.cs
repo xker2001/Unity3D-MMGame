@@ -9,22 +9,6 @@ namespace MMGame
         // 对贴图进行马赛克处理。
         //--------------------------------------------------
 
-        private struct PixelBlock
-        {
-            public int StartRow;
-            public int EndRow;
-            public int StartCol;
-            public int EndCol;
-
-            public PixelBlock(int startRow, int endRow, int startCol, int endCol)
-            {
-                StartRow = startRow;
-                EndRow = endRow;
-                StartCol = startCol;
-                EndCol = endCol;
-            }
-        }
-
         /// <summary>
         /// 对贴图进行马赛克处理。
         /// </summary>
@@ -34,7 +18,7 @@ namespace MMGame
         public static void Mosaics(Texture2D source, ref Texture2D output, int mosaicSize)
         {
             Color[] sourceColors = source.GetPixels();
-            Color[] outputColors = new Color[output.width * output.height];
+            var outputColors = new Color[output.width * output.height];
 
             mosaicSize = Mathf.Max(mosaicSize, 1);
 
@@ -54,6 +38,37 @@ namespace MMGame
 
             output.SetPixels(outputColors);
             output.Apply();
+        }
+
+        /// <summary>
+        /// 对 Sprite 进行马赛克处理。
+        /// </summary>
+        /// <param name="source">源 Sprite。</param>
+        /// <param name="mosaicSize">马赛克大小（像素）。</param>
+        /// <returns>马赛克化的 Sprite。</returns>
+        public static Sprite Mosaics(Sprite source, int mosaicSize)
+        {
+            // TODO: 暂时不实现这个功能。该功能是为了方便支持将 UI.Image 的图片进行马赛克处理
+            return new Sprite();
+        }
+
+        /// <summary>
+        /// 定义一个马赛克块。
+        /// </summary>
+        private struct PixelBlock
+        {
+            public readonly int StartRow;
+            public readonly int EndRow;
+            public readonly int StartCol;
+            public readonly int EndCol;
+
+            public PixelBlock(int startRow, int endRow, int startCol, int endCol)
+            {
+                StartRow = startRow;
+                EndRow = endRow;
+                StartCol = startCol;
+                EndCol = endCol;
+            }
         }
 
         /// <summary>
